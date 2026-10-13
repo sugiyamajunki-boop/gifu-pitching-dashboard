@@ -49,11 +49,21 @@ def load_data():
     
     df_game, df_track = pd.DataFrame(), pd.DataFrame()
     
-    if os.path.exists(game_path):
-        df_game = pd.read_csv(game_path, encoding='utf-8-sig')
-    
-    if os.path.exists(tracking_path):
-        df_track = pd.read_csv(tracking_path, encoding='utf-8-sig')
+    try:
+        df_game = pd.read_csv(game_path, encoding='utf-8', on_bad_lines='skip')
+    except:
+        try:
+            df_game = pd.read_csv(game_path, encoding='shift_jis', on_bad_lines='skip')
+        except:
+            pass
+            
+    try:
+        df_track = pd.read_csv(tracking_path, encoding='utf-8', on_bad_lines='skip')
+    except:
+        try:
+            df_track = pd.read_csv(tracking_path, encoding='shift_jis', on_bad_lines='skip')
+        except:
+            pass
         # SmartScoutの球種名を日本語に統一
         if 'Pitch Type' in df_track.columns:
             df_track['球種'] = df_track['Pitch Type'].map(PITCH_NAME_MAPPING).fillna(df_track['Pitch Type'])
